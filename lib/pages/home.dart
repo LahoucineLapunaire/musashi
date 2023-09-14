@@ -1,5 +1,5 @@
-import 'dart:ui';
-
+import 'package:Musashi/musashi.dart';
+import 'package:Musashi/pages/settings.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -51,6 +51,10 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingsPage()),
+                      );
                       print("Settings");
                     },
                     child: Image.asset(
@@ -62,7 +66,16 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(width: 20), // Espacement entre les boutons
                   GestureDetector(
                     onTap: () {
-                      print("Play");
+                      try {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => GameScreenPage()),
+                        );
+                        print("Play");
+                      } catch (e) {
+                        print(e.toString());
+                      }
                     },
                     child: Image.asset(
                       'assets/images/buttons/UI_Button_play.png', // Replace with the actual path

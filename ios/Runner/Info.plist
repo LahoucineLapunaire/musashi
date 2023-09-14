@@ -14,6 +14,14 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>musashi</string>
+	<key>CFBundleIcons</key>
+<dict>
+    <key>CFBundlePrimaryIcon</key>
+    <dict>
+        <key>CFBundleIconName</key>
+        <string>AppIcon</string> <!-- Change this to match your icon set name -->
+    </dict>
+</dict>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
