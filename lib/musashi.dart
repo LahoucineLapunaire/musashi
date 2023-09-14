@@ -33,7 +33,7 @@ class Musashi extends FlameGame {
       ..sprite = await Sprite.load('background_resized.png')
       ..size = size;
     add(background);
-    createAnimation("yoshioka", "standing");
+    createAnimation("musashi", "attack");
   }
 
   void createAnimation(
@@ -45,6 +45,15 @@ class Musashi extends FlameGame {
       final List<Sprite> animationFrames = [
         await Sprite.load(character + '/' + animationType + '/frame1.png'),
         await Sprite.load(character + '/' + animationType + '/frame2.png'),
+        await Sprite.load(character + '/' + animationType + '/frame3.png'),
+        await Sprite.load(character + '/' + animationType + '/frame4.png'),
+        await Sprite.load(character + '/' + animationType + '/frame5.png'),
+        await Sprite.load(character + '/' + animationType + '/frame6.png'),
+        await Sprite.load(character + '/' + animationType + '/frame7.png'),
+        await Sprite.load(character + '/' + animationType + '/frame8.png'),
+        await Sprite.load(character + '/' + animationType + '/frame9.png'),
+        await Sprite.load(character + '/' + animationType + '/frame10.png'),
+        await Sprite.load(character + '/' + animationType + '/frame11.png'),
         // Load frames here using Sprite.load
         // For example: await Sprite.load('frame1.png'),
         // Add all frames to this list
@@ -53,7 +62,7 @@ class Musashi extends FlameGame {
       // Create a SpriteAnimation from the loaded frames
       final animation = SpriteAnimation.spriteList(
         animationFrames,
-        stepTime: 0.4, // Adjust the duration for your desired animation speed
+        stepTime: 0.03, // Adjust the duration for your desired animation speed
         loop: true, // Set to true for a looping animation
       );
 
