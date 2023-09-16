@@ -1,5 +1,8 @@
-import 'package:flame/camera.dart';
+import 'dart:math';
+
+import 'package:Musashi/components/animation.dart';
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +19,34 @@ class _GameScreenPageState extends State<GameScreenPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GameWidget(
-        game: Musashi(),
+        game: MusashiGame(),
       ),
     );
   }
 }
 
-class Musashi extends FlameGame {
+GestureDetector buildPauseButton() {
+  return GestureDetector(
+    onTap: () {
+      print("pause");
+    },
+    child: Image.asset(
+      'assets/images/buttons/UI_Button_settings.png', // Replace with the actual path
+      width: 50, // Adjust the size as needed
+      height: 50,
+    ),
+  );
+}
+
+class MusashiGame extends FlameGame with TapCallbacks {
+  late SpriteAnimationComponent character;
+  List<SpriteAnimationComponent> enemies = [];
+  late MusashiCharacter musashi;
+
+  Vector2 targetPosition =
+      Vector2.zero(); // Initialize to (0,0) or any starting position
+  double moveSpeed = 200.0; // Adjust the move speed as needed
+
   @override
   Future<void> onLoad() async {
     print("loading assets");
@@ -33,52 +57,57 @@ class Musashi extends FlameGame {
       ..sprite = await Sprite.load('background_resized.png')
       ..size = size;
     add(background);
-    createAnimation("musashi", "attack");
+    // Create and initialize MusashiCharacter
+    musashi = MusashiCharacter(Vector2(
+        size.x / 2 - 50, size.y / 2 - 50)); // Assign to the musashi field
+    // Wait for characterComponent initialization to complete
+    await musashi.initialization;
+
+    // Assign the characterComponent to the character field
+    character = musashi.characterComponent;
+
+    // Add the characterComponent to the game
+    add(character);
+
+    //------------------------------------------------------------
+
+    YoshiokaEnemy yoshiokaEnemy =
+        YoshiokaEnemy(Vector2(100, 200)); // Assign to the musashi field
+    // Wait for characterComponent initialization to complete
+    await yoshiokaEnemy.initialization;
+    enemies.add(yoshiokaEnemy.enemyComponent);
+    add(yoshiokaEnemy.enemyComponent);
   }
 
-  void createAnimation(
-    String character,
-    String animationType,
-  ) async {
-    try {
-      // Load animation frames (replace with your frame loading logic)
-      final List<Sprite> animationFrames = [
-        await Sprite.load(character + '/' + animationType + '/frame1.png'),
-        await Sprite.load(character + '/' + animationType + '/frame2.png'),
-        await Sprite.load(character + '/' + animationType + '/frame3.png'),
-        await Sprite.load(character + '/' + animationType + '/frame4.png'),
-        await Sprite.load(character + '/' + animationType + '/frame5.png'),
-        await Sprite.load(character + '/' + animationType + '/frame6.png'),
-        await Sprite.load(character + '/' + animationType + '/frame7.png'),
-        await Sprite.load(character + '/' + animationType + '/frame8.png'),
-        await Sprite.load(character + '/' + animationType + '/frame9.png'),
-        await Sprite.load(character + '/' + animationType + '/frame10.png'),
-        await Sprite.load(character + '/' + animationType + '/frame11.png'),
-        // Load frames here using Sprite.load
-        // For example: await Sprite.load('frame1.png'),
-        // Add all frames to this list
-      ];
+  SpriteAnimationComponent? isTapOnEnemy(Vector2 tapPosition) {
+    // Check if the tap position is within the bounds of the enemy
+    for (final enemy in enemies) {
+      final enemyPosition = enemy.position;
+      final enemySize = enemy.size;
 
-      // Create a SpriteAnimation from the loaded frames
-      final animation = SpriteAnimation.spriteList(
-        animationFrames,
-        stepTime: 0.03, // Adjust the duration for your desired animation speed
-        loop: true, // Set to true for a looping animation
-      );
-
-      double x = size.x / 2 - 50;
-      double y = size.y / 2 - 50;
-
-      // Create a SpriteAnimationComponent to display the animation
-      final animationComponent = SpriteAnimationComponent(
-        animation: animation,
-        position: Vector2(x, y),
-        size: Vector2(100, 100),
-      );
-      add(animationComponent);
-    } catch (e) {
-      print("error loading animation : $e");
+      if (tapPosition.x >= enemyPosition.x &&
+          tapPosition.x <= enemyPosition.x + enemySize.x &&
+          tapPosition.y >= enemyPosition.y &&
+          tapPosition.y <= enemyPosition.y + enemySize.y) {
+        return enemy; // Tap is on the enemy
+      }
     }
+    return null; // Tap is not on the enemy
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) async {
+    /*
+    SpriteAnimationComponent? enemy = isTapOnEnemy(event.localPosition);
+    if (enemy != null) {
+      print("tap on enemy");
+      print(enemy.position);
+      musashi.moveToEnemy(enemy.position, 1.1);
+      enemies.remove(enemy);
+      remove(enemy);
+    }
+    */
+    musashi.moveToEnemy(event.localPosition, 1);
   }
 
   @override
@@ -91,5 +120,14 @@ class Musashi extends FlameGame {
   void render(Canvas canvas) {
     // Rendering is handled automatically, including the background
     super.render(canvas);
+    // Render the pause button at the top right corner
+    final double buttonSize = 40.0; // Adjust the button size as needed
+    final double margin = 16.0; // Adjust the margin as needed
+    final Offset buttonPosition = Offset(
+      size.x - buttonSize - margin,
+      margin,
+    );
+
+    final pauseButton = buildPauseButton();
   }
 }
